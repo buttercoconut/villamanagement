@@ -1,36 +1,12 @@
-"""FastAPI application entry point.
-
-This module creates the FastAPI app, includes routers, and configures
-middleware such as CORS and exception handlers.
-"""
-
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from app.routes import resident, notice, fee
 
-from .routes.villa import villa_router
-from .routes.resident import resident_router
+app = FastAPI(title="Villa Management API")
 
-# Create FastAPI app
-app = FastAPI(
-    title="Villa Management API",
-    description="API for managing villas, residents, and fee calculations.",
-    version="0.1.0",
-)
+app.include_router(resident.router, prefix="/residents", tags=["Residents"])
+app.include_router(notice.router, prefix="/notices", tags=["Notices"])
+app.include_router(fee.router, prefix="/fees", tags=["Fees"])
 
-# Allow CORS for local dev
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Include routers
-app.include_router(villa_router, prefix="/villas", tags=["Villas"])
-app.include_router(resident_router, prefix="/residents", tags=["Residents"])
-
-# Root endpoint
-@app.get("/", tags=["Health"])
+@app.get("/")
 async def root():
-    return {"message": "Villa Management API is running."}
+    return {"message": "Welcome to Villa Management API"}
