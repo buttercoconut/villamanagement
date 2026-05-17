@@ -1,20 +1,15 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List
-from app.schemas.notice import Notice, NoticeCreate
+from ..schemas.notice import Notice, NoticeListResponse
 
-router = APIRouter()
+router = APIRouter(prefix="/notices", tags=["Notices"])
 
-_notices: List[Notice] = []
-_next_id = 1
+# Dummy in-memory store
+_notices = [
+    Notice(id=1, title="Welcome", content="Welcome to the villa", created_at="2024-01-01T10:00:00Z", author_id=1),
+    Notice(id=2, title="Maintenance", content="Maintenance on Jan 5", created_at="2024-01-02T12:00:00Z", author_id=1),
+]
 
-@router.post("/", response_model=Notice)
-async def create_notice(notice: NoticeCreate):
-    global _next_id
-    new_notice = Notice(id=_next_id, created_at="2024-01-01T00:00:00Z", **notice.dict())
-    _notices.append(new_notice)
-    _next_id += 1
-    return new_notice
-
-@router.get("/", response_model=List[Notice])
-async def list_notices():
-    return _notices
+@router.get("/", response_model=NoticeListResponse)
+async def list_notices() -> NoticeListResponse:
+    return NoticeListResponse(notices=_notices, total=len(_notices))

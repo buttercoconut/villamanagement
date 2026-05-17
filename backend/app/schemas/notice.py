@@ -1,15 +1,13 @@
 from pydantic import BaseModel
 from typing import List
 
-class NoticeBase(BaseModel):
+class Notice(BaseModel):
+    id: int
     title: str
     content: str
-
-class NoticeCreate(NoticeBase):
-    pass
-
-class Notice(NoticeBase):
-    id: int
     created_at: str
-    class Config:
-        orm_mode = True
+    author_id: int
+
+class NoticeListResponse(BaseModel):
+    notices: List[Notice]
+    total: int
